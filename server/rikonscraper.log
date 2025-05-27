@@ -1,0 +1,12 @@
+2025/05/27 09:56:51 Node: &{Parent:0xc000138230 FirstChild:0xc0001391f0 LastChild:0xc000139490 PrevSibling:0xc000139110 NextSibling:0xc000139500 Type:3 DataAtom:div Data:div Namespace: Attr:[{Namespace: Key:class Val:woocommerce-product-details__short-description}]}
+2025/05/27 09:56:51 Node: &{Parent:0xc000139180 FirstChild:<nil> LastChild:<nil> PrevSibling:<nil> NextSibling:0xc000139260 Type:1 DataAtom: Data:
+	 Namespace: Attr:[]}
+2025/05/27 09:56:51 Node: &{Parent:0xc000139180 FirstChild:0xc0001392d0 LastChild:0xc0001393b0 PrevSibling:0xc0001391f0 NextSibling:0xc000139490 Type:3 DataAtom:p Data:p Namespace: Attr:[]}
+2025/05/27 09:56:51 Node: &{Parent:0xc000139180 FirstChild:<nil> LastChild:<nil> PrevSibling:0xc000139260 NextSibling:<nil> Type:1 DataAtom: Data:
+ Namespace: Attr:[]}
+2025/05/27 09:57:09 Node: &{Parent:0xc0003cae70 FirstChild:0xc00031d180 LastChild:0xc00031d420 PrevSibling:0xc00031d0a0 NextSibling:0xc00031d490 Type:3 DataAtom:div Data:div Namespace: Attr:[{Namespace: Key:class Val:woocommerce-product-details__short-description}]}
+2025/05/27 09:57:09 Node: &{Parent:0xc00031d110 FirstChild:<nil> LastChild:<nil> PrevSibling:<nil> NextSibling:0xc00031d1f0 Type:1 DataAtom: Data:
+	 Namespace: Attr:[]}
+2025/05/27 09:57:09 Node: &{Parent:0xc00031d110 FirstChild:0xc00031d260 LastChild:0xc00031d340 PrevSibling:0xc00031d180 NextSibling:0xc00031d420 Type:3 DataAtom:p Data:p Namespace: Attr:[]}
+2025/05/27 09:57:09 Node: &{Parent:0xc00031d110 FirstChild:<nil> LastChild:<nil> PrevSibling:0xc00031d1f0 NextSibling:<nil> Type:1 DataAtom: Data:
+ Namespace: Attr:[]}

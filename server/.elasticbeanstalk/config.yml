@@ -1,0 +1,18 @@
+branch-defaults:
+  default:
+    environment: go-env
+    group_suffix: null
+global:
+  application_name: rikon-scraper
+  branch: null
+  default_ec2_keyname: aws-eb
+  default_platform: Go 1
+  default_region: us-east-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  repository: null
+  sc: null
+  workspace_type: Application
