@@ -36,6 +36,11 @@ export async function putAlert(email: string, id: string): Promise<HttpStatusCod
     return response.status
 }
 
+export async function deleteAlert(id: string): Promise<HttpStatusCode> {
+    const response = await axios.delete(`alerts/${id}`)
+    return response.status
+}
+
 export async function getAlertsByEmail(email: string): Promise<Alert[]> {
     let alerts: Alert[] = [];
     await axios.get(`alerts/${email}`).then((response: AxiosResponse<Alert[]>) => {

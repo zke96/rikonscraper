@@ -32,6 +32,7 @@ func RunServer() {
 	alerts := v0.Group("/alerts")
 	alerts.PUT("/", createPartAlert)
 	alerts.GET("/:email", getAlertsByEmail)
+	alerts.DELETE("/:id", deleteAlert)
 
 	r.Run()
 }
@@ -202,6 +203,24 @@ func getAlertsByEmail(c *gin.Context) {
 	}
 
 	c.JSON(200, alerts)
+}
+
+func deleteAlert(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		log.Printf("Invalid id parameter, %s", err)
+		c.Status(400)
+		return
+	}
+
+	if err := alerts.DeleteAlert(id); err != nil {
+		log.Printf("Failed to remove alert from db, %s", err)
+		c.Status(400)
+		return
+	}
+
+	c.Status(200)
 }
 
 func validEmail(email string) bool {

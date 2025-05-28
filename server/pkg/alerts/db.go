@@ -51,3 +51,13 @@ func GetAllAlerts() ([]types.AlertRecord, error) {
 
 	return alerts, nil
 }
+
+func DeleteAlert(id uuid.UUID) error {
+	_, err := pool.Exec(context.Background(), "DELETE FROM rikonscraper.alerts WHERE id=$1", id)
+	if err != nil {
+		log.Printf("Failed to remove alert from db, %s", err)
+		return err
+	}
+
+	return nil
+}

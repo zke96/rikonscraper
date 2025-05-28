@@ -42,14 +42,13 @@ func handleAlerts() error {
 	}
 
 	for _, a := range allAlerts {
-		fullURL := cfg.RikonURL + a.Display
-		stockStatus, err := getProductStatus(fullURL)
+		stockStatus, err := getProductStatus(a.URL)
 		if err != nil {
 			log.Printf("Failed to get stock status for product: %s, %s", a.Display, err)
 			break
 		}
 
-		if err := sendAlert(fullURL, a.Display, a.Email, stockStatus); err != nil {
+		if err := sendAlert(a, stockStatus); err != nil {
 			log.Printf("Failed to send email alert to %s for product %s, %s", a.Email, a.Display, err)
 		}
 	}
@@ -86,26 +85,28 @@ func getProductStatus(url string) (bool, error) {
 	return false, fmt.Errorf("failed to find stock value for product: %s", url)
 }
 
-func sendAlert(url, productCode, emailTo string, inStock bool) error {
-	subjectLine := fmt.Sprintf("Stock alert for %s, ", productCode)
+func sendAlert(alert types.AlertRecord, inStock bool) error {
+	subjectLine := fmt.Sprintf("Stock alert for %s, ", alert.Display)
+	stockStatus := ""
 	if inStock {
-		subjectLine += "In Stock!"
+		stockStatus = "In Stock"
 	} else {
-		subjectLine += "Out of Stock"
+		stockStatus = "Out of Stock"
 	}
+	subjectLine += stockStatus
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", cfg.EmailFrom)
-	m.SetHeader("To", emailTo)
+	m.SetHeader("To", alert.Email)
 	m.SetHeader("Subject", subjectLine)
-	m.SetBody("text/plain", url)
+	m.SetBody("text/plain", fmt.Sprintf("Rikon Part %s is %s.\n%s\n\nTo manage your subscriptions visit %salerts/%s", alert.Display, stockStatus, alert.URL, cfg.WebHost, alert.Email))
 
 	if err := dialer.DialAndSend(m); err != nil {
 		log.Println(err)
 		return err
 	}
 
-	log.Printf("Sent stock alert email to %s", emailTo)
+	log.Printf("Sent stock alert email to %s", alert.Email)
 	return nil
 }
 
@@ -116,7 +117,7 @@ func SendSubscribeEmail(email string, part types.Product) error {
 	m.SetHeader("From", cfg.EmailFrom)
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", subjectLine)
-	m.SetBody("text/plain", fmt.Sprintf("You have subscribed to email alerts for Rikon part number %s. You will receive stock status alerts at this email once a day.\n\nTo manage your subscriptions visit https://localhost:5173/alerts/%s", part.Display, email))
+	m.SetBody("text/plain", fmt.Sprintf("You have subscribed to email alerts for Rikon part number %s. You will receive stock status alerts at this email once a day.\n\nTo manage your subscriptions visit %salerts/%s", part.Display, cfg.WebHost, email))
 
 	if err := dialer.DialAndSend(m); err != nil {
 		log.Println(err)

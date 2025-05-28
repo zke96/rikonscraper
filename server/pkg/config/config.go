@@ -17,6 +17,7 @@ type Config struct {
 	PGUser         string
 	PGPassword     string
 	PGDBName       string
+	WebHost        string
 }
 
 func LoadConfig() Config {
@@ -48,6 +49,7 @@ func LoadConfig() Config {
 	pgPort := getEnvInt("PG_PORT", 5432)
 	pgUser := getEnv("PG_USER", "postgres")
 	pgDBName := getEnv("PG_DBNAME", "postgres")
+	webHost := getEnv("WEB_HOST", "http://localhost:5173/")
 
 	return Config{
 		DurationString: durationString,
@@ -59,6 +61,7 @@ func LoadConfig() Config {
 		PGUser:         pgUser,
 		PGPassword:     pgPassword,
 		PGDBName:       pgDBName,
+		WebHost:        webHost,
 	}
 }
 

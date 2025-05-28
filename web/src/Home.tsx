@@ -43,7 +43,9 @@ function Home() {
 
     const submitNewAlert = () => {
         if (selectedPart) {
-            putAlert(email, selectedPart.id).catch(() => {
+            putAlert(email, selectedPart.id).then(() => {
+                window.alert(`Successfully subscribed to updates for product ${selectedPart.label}`)
+            }).catch(() => {
                 window.alert('Failed to subscribe')
             })
             setEmail('');

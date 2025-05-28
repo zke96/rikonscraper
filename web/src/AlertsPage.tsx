@@ -3,7 +3,7 @@ import { Box, CircularProgress, IconButton, Stack, Typography } from "@mui/mater
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import './Home.css';
-import { getAlertsByEmail } from "./util/api";
+import { deleteAlert, getAlertsByEmail } from "./util/api";
 import type { Alert } from "./util/types";
 
 function AlertsPage() {
@@ -22,6 +22,15 @@ function AlertsPage() {
         }
     }, [email])
 
+    const handleRemove = (id: string, display: string) => {
+        deleteAlert(id).then(() => {
+            setAlerts(prev => prev.filter(a => a.id !== id))
+            window.alert(`Successfully remove alert for product ${display}`)
+        }).catch(() => {
+            window.alert('Failed to remove alert')
+        })
+    }
+
     return (
         <Box sx={{ background: 'background.paper' }}>
             <Stack spacing={2} sx={{ alignItems: 'left', width: '600px' }}>
@@ -29,9 +38,9 @@ function AlertsPage() {
                 {alerts.length > 0 &&
                     <Stack spacing={1}>
                         {alerts.map((a) => (
-                            <Box key={`alert-${a.productCode}`}>
-                                <Typography>{a.productCode}</Typography>
-                                <IconButton><DeleteOutlineIcon /></IconButton>
+                            <Box key={`alert-${a.productCode}`} sx={{ display: 'flex', }}>
+                                <Typography sx={{ textAlign: 'left', color: 'text.primary' }}>{a.display}</Typography>
+                                <IconButton onClick={() => handleRemove(a.id, a.display)}><DeleteOutlineIcon /></IconButton>
                             </Box>
                         ))}
                     </Stack>}

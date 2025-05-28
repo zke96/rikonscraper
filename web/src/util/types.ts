@@ -9,6 +9,8 @@ export interface Product {
 }
 
 export interface Alert {
+    id: string;
     email: string;
     productCode: string;
+    display: string;
 }

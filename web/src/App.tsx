@@ -13,8 +13,7 @@ const darkTheme = createTheme({
 });
 
 function App() {
-  // axios.defaults.baseURL = 'https://mn6v9itpxb.us-east-2.awsapprunner.com/';
-  axios.defaults.baseURL = 'http://localhost:8080/v0/';
+  axios.defaults.baseURL = 'https://mn6v9itpxb.us-east-2.awsapprunner.com/v0/';
 
   return (
     <ThemeProvider theme={darkTheme}>
