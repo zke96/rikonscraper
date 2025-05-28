@@ -1,14 +1,8 @@
-import { AppBar, Autocomplete, Box, Card, CardContent, CardHeader, Link, Skeleton, Stack, TextField, Toolbar, Typography } from "@mui/material";
+import { Autocomplete, Button, Card, CardContent, CardHeader, Link, Skeleton, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import './Home.css';
-
-interface Product {
-    label: string;
-    url: string;
-    price?: string;
-    inStock?: boolean;
-    description?: string;
-}
+import { getPartDetails, getPartsForProduct, getProducts, putAlert } from "./util/api";
+import type { Product } from "./util/types";
 
 function Home() {
     const [products, setProducts] = useState<Product[]>([])
@@ -17,12 +11,12 @@ function Home() {
     const [selectedPart, setSelectedPart] = useState<Product | null>(null)
     const [productDetails, setProductDetails] = useState<Product | null>(null)
     const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
+    const [email, setEmail] = useState<string>('');
 
     useEffect(() => {
-        fetch("http://localhost:8080/products").then(response => {
-            response.json().then((json: Product[]) => {
-                setProducts(json)
-            })
+        getProducts().then((products) => {
+            console.log(products)
+            setProducts(products)
         })
     }, [])
 
@@ -30,10 +24,8 @@ function Home() {
         if (selectedProduct) {
             setParts([]);
             setSelectedPart(null);
-            fetch(`http://localhost:8080/parts?partNumber=${selectedProduct.url}`).then(response => {
-                response.json().then((json: Product[]) => {
-                    setParts(json)
-                })
+            getPartsForProduct(selectedProduct.id).then(parts => {
+                setParts(parts)
             })
         }
     }, [selectedProduct])
@@ -42,70 +34,63 @@ function Home() {
         if (selectedPart) {
             setDetailsLoading(true);
             setProductDetails(null);
-            fetchPartInfo(selectedPart)
+            getPartDetails(selectedPart).then(details => {
+                setProductDetails(details);
+                setDetailsLoading(false);
+            })
         }
     }, [selectedPart])
 
-    const fetchPartInfo = (p: Product) => {
-        fetch(`http://localhost:8080/partinfo?url=${p.url}`).then(response => {
-            response.json().then(json => {
-                console.log(json)
-                setProductDetails(json)
-                setDetailsLoading(false)
+    const submitNewAlert = () => {
+        if (selectedPart) {
+            putAlert(email, selectedPart.id).catch(() => {
+                window.alert('Failed to subscribe')
             })
-        }).catch(() => setDetailsLoading(false))
+            setEmail('');
+        }
     }
 
     return (
-        <Box sx={{ background: 'background.paper' }}>
-            <AppBar>
-                <Toolbar>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                    >
-                        Rikon Parts Stock Alert
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-            <Stack spacing={2} sx={{ alignItems: 'center', width: '400px' }}>
+        <Stack spacing={2} sx={{ alignItems: 'center', width: '400px' }}>
+            <Autocomplete
+                fullWidth
+                options={products}
+                value={selectedProduct}
+                loading={products.length === 0}
+                loadingText="Loading Products..."
+                onChange={(_e, v) => v && setSelectedProduct(v)}
+                renderInput={(params) => <TextField {...params} label="Select Product" />}
+            />
+            {selectedProduct &&
                 <Autocomplete
                     fullWidth
-                    options={products}
-                    value={selectedProduct}
-                    loading={products.length === 0}
-                    loadingText="Loading Products..."
-                    onChange={(_e, v) => v && setSelectedProduct(v)}
-                    renderInput={(params) => <TextField {...params} label="Select Product" />}
-                />
-                {selectedProduct &&
-                    <Autocomplete
-                        fullWidth
-                        options={parts}
-                        value={selectedPart}
-                        loading={parts.length === 0}
-                        loadingText="Loading Parts..."
-                        onChange={(_e, v) => setSelectedPart(v)}
-                        renderInput={(params) => <TextField {...params} label="Select Part" />}
-                    />}
-                {productDetails && <Card sx={{ width: '500px' }}>
-                    <CardHeader
-                        classes={{
-                            title: 'title',
-                            subheader: 'title'
-                        }}
-                        title={productDetails.label} subheader={productDetails.description} sx={{ borderBottom: '1px solid', borderColor: 'divider' }} />
-                    <CardContent>
-                        <Stack sx={{ alignItems: 'flex-start' }}>
-                            <Typography>Price: ${productDetails.price}</Typography>
-                            <Typography>Stock Status: {productDetails.inStock ? 'In Stock' : 'Out of Stock'}</Typography>
-                            {productDetails.url && <Link href={`https://rikontools.com/products/${productDetails.url}`}>View Part Page</Link>}
-                        </Stack>
-                    </CardContent>
-                </Card>}
-                {detailsLoading && <Skeleton variant="rounded" width={300} height={120} />}
-            </Stack>
-        </Box>
+                    options={parts}
+                    value={selectedPart}
+                    loading={parts.length === 0}
+                    loadingText="Loading Parts..."
+                    onChange={(_e, v) => setSelectedPart(v)}
+                    renderInput={(params) => <TextField {...params} label="Select Part" />}
+                />}
+            {productDetails && <Card sx={{ width: '500px' }}>
+                <CardHeader
+                    classes={{
+                        title: 'title',
+                        subheader: 'title'
+                    }}
+                    title={productDetails.label} subheader={productDetails.description} sx={{ borderBottom: '1px solid', borderColor: 'divider' }} />
+                <CardContent>
+                    <Stack sx={{ alignItems: 'flex-start' }}>
+                        <Typography>Price: ${productDetails.price}</Typography>
+                        <Typography>Stock Status: {productDetails.inStock ? 'In Stock' : 'Out of Stock'}</Typography>
+                        {productDetails.url && <Link href={`https://rikontools.com/products/${productDetails.url}`}>View Part Page</Link>}
+                        <Typography>Enter your email to be notified when this part is back in stock</Typography>
+                        <TextField value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <Button onClick={submitNewAlert}>Submit</Button>
+                    </Stack>
+                </CardContent>
+            </Card>}
+            {detailsLoading && <Skeleton variant="rounded" width={300} height={120} />}
+        </Stack>
     )
 }
 
